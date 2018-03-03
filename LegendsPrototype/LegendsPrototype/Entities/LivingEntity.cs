@@ -4,12 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LegendsPrototype
-{
-	class Program
-	{
-		static void Main(string[] args)
-		{
-		}
+namespace LegendsPrototype.Entities {
+	class LivingEntity {
 	}
 }
