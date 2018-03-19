@@ -39,7 +39,7 @@ namespace LegendsSimTest {
 		}
 
 		static void Main(string[] args) {
-			Console.WindowWidth = 120;
+			Console.WindowWidth = 140;
 			Console.WindowHeight = 60;
 			Console.BufferHeight = 60;
 			LegendsSimTest g = new LegendsSimTest();

@@ -66,6 +66,13 @@
     <Compile Include="Entities\Components\HealthComponent.cs" />
     <Compile Include="Entities\Components\HungerComponent.cs" />
     <Compile Include="Entities\Components\InventoryComponent.cs" />
+    <Compile Include="Entities\Intents\ConsumeIntent.cs" />
+    <Compile Include="Entities\Intents\Intent.cs" />
+    <Compile Include="Entities\Intents\MoveIntent.cs" />
+    <Compile Include="Entities\Intents\CheckStatusIntent.cs" />
+    <Compile Include="Entities\Intents\SearchFieldIntent.cs" />
+    <Compile Include="Entities\Intents\SearchInventoryIntent.cs" />
+    <Compile Include="Entities\Intents\SurvivalIntent.cs" />
     <Compile Include="Entities\Items\ConsumableItem.cs" />
     <Compile Include="Entities\Items\ItemBase.cs" />
     <Compile Include="Entities\LivingEntity.cs" />
