@@ -67,6 +67,7 @@
     <Compile Include="Entities\Components\HungerComponent.cs" />
     <Compile Include="Entities\Components\InventoryComponent.cs" />
     <Compile Include="Entities\Intents\ConsumeIntent.cs" />
+    <Compile Include="Entities\Intents\IdleIntent.cs" />
     <Compile Include="Entities\Intents\Intent.cs" />
     <Compile Include="Entities\Intents\MoveIntent.cs" />
     <Compile Include="Entities\Intents\CheckStatusIntent.cs" />

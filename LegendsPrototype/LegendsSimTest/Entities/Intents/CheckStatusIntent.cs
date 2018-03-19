@@ -14,7 +14,7 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public class CheckStatusResult : Intent.Result {
 			public int? health;
-			public int? hunger;
+			public double? hunger;
 
 			public override string ToString() {
 				return string.Format("Check Status Result (Health: {0}, Hunger: {1})", health, hunger);

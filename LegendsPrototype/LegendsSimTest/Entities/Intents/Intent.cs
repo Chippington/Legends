@@ -11,8 +11,6 @@ namespace LegendsSimTest.Entities.Intents {
 	public class Intent : ObjectBase {
 		public interface ITask {
 			IntentEvent onComplete { get; set; }
-			int priority { get; set; }
-
 			Result getResult();
 		}
 
@@ -20,7 +18,6 @@ namespace LegendsSimTest.Entities.Intents {
 		public class Task<R> : ObjectBase, ITask where R : Result {
 			public IntentEvent onComplete { get; set; }
 			public R result { get; protected set; }
-			public int priority { get; set; }
 
 			public virtual void complete(R result) {
 				this.result = result;
@@ -35,7 +32,7 @@ namespace LegendsSimTest.Entities.Intents {
 		}
 
 		public IntentEvent onComplete;
-		public int priority;
+		public virtual double priority { get; set; }
 
 		public virtual ITask getTask() {
 			return null;
@@ -43,7 +40,6 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public virtual void onIntentActivated() { }
 		public virtual void onIntentDeactivated() { }
-		public virtual void reset() { }
 		public virtual void complete() {
 			onComplete?.Invoke();
 		}

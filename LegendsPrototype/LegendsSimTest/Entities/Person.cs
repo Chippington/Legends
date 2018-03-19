@@ -13,11 +13,14 @@ using static LegendsSimTest.Entities.Intents.Intent;
 namespace LegendsSimTest.Entities {
 
 	public class Person : LivingEntity {
-		protected SurvivalIntent survival;
+		protected SurvivalIntent survivalIntent;
+		protected IdleIntent idleIntent;
+
 		public Dictionary<Type, Delegate> funcMap;
 		public InventoryComponent inventory;
-		public Position position;
+		public HungerComponent hunger;
 		public List<Intent> desires;
+		public Stopwatch taskTime;
 
 		public Intent currentIntent;
 		public ITask currentTask {
@@ -34,30 +37,38 @@ namespace LegendsSimTest.Entities {
 			health.setMaxHealth(100);
 			health.setHealth(10);
 
+			inventory = components.Add<InventoryComponent>();
+			hunger = components.Add<HungerComponent>();
+
 			desires = new List<Intent>();
 			funcMap = new Dictionary<Type, Delegate>();
-			inventory = components.Add<InventoryComponent>();
-			position = components.Add<Position>();
 			inventory.addItem(new ConsumableItem());
 
 			addTaskCallback<SearchInventoryIntent.SearchInventoryTask>(cbSearchInventoryTask);
 			addTaskCallback<CheckStatusIntent.CheckStatusTask>(cbCheckStatusTask);
 			addTaskCallback<ConsumeIntent.ConsumeTask>(cbConsumeTask);
 			addTaskCallback<MoveIntent.MoveTask>(cbMoveTask);
+			addTaskCallback<IdleIntent.IdleTask>(cbIdleTask);
 
-			survival = new SurvivalIntent();
-			survival.onComplete += onSurvivalCheckComplete;
+			survivalIntent = new SurvivalIntent();
+			survivalIntent.onComplete += onSurvivalCheckComplete;
 
-			desires.Add(survival);
+			idleIntent = new IdleIntent();
+			idleIntent.priority = 3.0d;
+
+			desires.Add(survivalIntent);
+			desires.Add(idleIntent);
 		}
 
-		private void onSurvivalCheckComplete() {
-			desires.Remove(survival);
-			survival.onComplete = null;
+		private void cbIdleTask(IdleIntent.IdleTask obj) { }
 
-			survival = new SurvivalIntent();
-			desires.Add(survival);
-			survival.onComplete += onSurvivalCheckComplete;
+		private void onSurvivalCheckComplete() {
+			desires.Remove(survivalIntent);
+			survivalIntent.onComplete = null;
+
+			survivalIntent = new SurvivalIntent();
+			desires.Add(survivalIntent);
+			survivalIntent.onComplete += onSurvivalCheckComplete;
 		}
 
 		private void cbSearchInventoryTask(SearchInventoryIntent.SearchInventoryTask obj) {
@@ -69,11 +80,15 @@ namespace LegendsSimTest.Entities {
 		private void cbCheckStatusTask(CheckStatusIntent.CheckStatusTask obj) {
 			obj.complete(new CheckStatusIntent.CheckStatusResult() {
 				health = health.getHealth(),
+				hunger = hunger.getHunger(),
 			});
 		}
 
 		private void cbConsumeTask(ConsumeIntent.ConsumeTask obj) {
-			health.addHealth(10);
+			if (taskTime.Elapsed.TotalSeconds < 0.3d)
+				return;
+
+			hunger.subtractHunger(30);
 			obj.complete(new ConsumeIntent.ConsumeResult());
 		}
 
@@ -96,16 +111,30 @@ namespace LegendsSimTest.Entities {
 		private ITask lastTask;
 		public override void onUpdate(GameContext context) {
 			base.onUpdate(context);
-			var ordered = desires.OrderBy(i => i.priority);
+			var ordered = desires.OrderByDescending(i => {
+				if (i == currentIntent) return i.priority + (i.priority / 3);
+				return i.priority;
+			});
+
 			var priority = ordered.FirstOrDefault();
 			if(priority != currentIntent) {
+				if (currentIntent != null) 
+					currentIntent.onIntentDeactivated();
+
 				currentIntent = priority;
+				priority.onIntentActivated();
 			}
 
 			if (currentIntent != null && currentTask != null) {
 				if(lastTask != currentTask) {
+					if(taskTime == null) {
+						taskTime = new Stopwatch();
+					}
+
+					taskTime.Reset();
+					taskTime.Start();
 					lastTask = currentTask;
-					log("Starting Task: " + currentTask.ToString());
+					//log("Starting Task: " + currentTask.ToString());
 				}
 
 				tryInvoke(currentTask);

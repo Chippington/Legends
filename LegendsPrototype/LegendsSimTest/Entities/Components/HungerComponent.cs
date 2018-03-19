@@ -16,6 +16,7 @@ namespace LegendsSimTest.Entities.Components {
 				return timer.Elapsed.TotalSeconds - consumed;
 			}
 		}
+
 		private Stopwatch timer;
 
 		public override void onInitialize(GameContext context) {
