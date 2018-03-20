@@ -1,4 +1,5 @@
-﻿using SFMLEngine;
+﻿using LegendsSimTest.Knowledge;
+using SFMLEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace LegendsSimTest.Entities.Intents {
 	public delegate void IntentEvent();
 
-	public class Intent : ObjectBase {
+	public class Intent : ObjectBase, IDescriptor {
 		public interface ITask {
 			IntentEvent onComplete { get; set; }
 			Result getResult();
@@ -42,6 +43,10 @@ namespace LegendsSimTest.Entities.Intents {
 		public virtual void onIntentDeactivated() { }
 		public virtual void complete() {
 			onComplete?.Invoke();
+		}
+
+		public virtual IEnumerable<ITag> getTags() {
+			return new List<ITag>();
 		}
 	}
 }

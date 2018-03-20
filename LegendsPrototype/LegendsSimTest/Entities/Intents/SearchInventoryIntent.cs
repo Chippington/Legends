@@ -4,24 +4,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendsSimTest.Knowledge;
+using LegendsSimTest.Knowledge.Tags;
 
 namespace LegendsSimTest.Entities.Intents {
 	public class SearchInventoryIntent : Intent {
-		public class SearchInventoryTask : Task<SearchInventoryResult> {
+		public class SearchInventoryByTypeTask : Task<SearchInventoryResult> {
 			public List<Type> searchTypes { get; protected set; }
-			public SearchInventoryTask(List<Type> searchTypes) {
+			public SearchInventoryByTypeTask(List<Type> searchTypes) {
 				this.searchTypes = searchTypes;
 			}
 
 			public override string ToString() {
 				string types = "";
-				for(int i = 0; i < searchTypes.Count; i++) {
+				for (int i = 0; i < searchTypes.Count; i++) {
 					var type = searchTypes[i].Name;
 					types += type + ", ";
 				}
 
 				types = types.Trim().Trim(',');
 				return string.Format("Search Inventory Task (SearchTypes: [{0}])", types);
+			}
+		}
+
+		public class SearchInventoryByTagTask : Task<SearchInventoryResult> {
+			public List<ITag> searchTags { get; protected set; }
+			public SearchInventoryByTagTask(List<ITag> searchTags) {
+				this.searchTags = searchTags;
+			}
+
+			public override string ToString() {
+				string types = "";
+				for (int i = 0; i < searchTags.Count; i++) {
+					var type = searchTags[i].name;
+					types += type + ", ";
+				}
+
+				types = types.Trim().Trim(',');
+				return string.Format("Search Inventory Task (SearchTags: [{0}])", types);
 			}
 		}
 
@@ -40,11 +60,16 @@ namespace LegendsSimTest.Entities.Intents {
 			}
 		}
 
-		protected SearchInventoryTask task;
+		protected Task<SearchInventoryResult> task;
 		protected SearchInventoryResult result;
 
 		public SearchInventoryIntent(List<Type> searchTypes) {
-			task = new SearchInventoryTask(searchTypes);
+			task = new SearchInventoryByTypeTask(searchTypes);
+			task.onComplete += () => complete();
+		}
+
+		public SearchInventoryIntent(List<ITag> searchTags) {
+			task = new SearchInventoryByTagTask(searchTags);
 			task.onComplete += () => complete();
 		}
 
@@ -59,6 +84,14 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public SearchInventoryResult getResult() {
 			return result;
+		}
+
+		public override IEnumerable<ITag> getTags() {
+			var tags = new List<ITag>();
+			tags.Add(new Investigating());
+			tags.Add(new Searching());
+			tags.AddRange(base.getTags());
+			return tags;
 		}
 	}
 }

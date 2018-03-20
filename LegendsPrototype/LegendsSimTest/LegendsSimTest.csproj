@@ -78,6 +78,9 @@
     <Compile Include="Entities\Items\ItemBase.cs" />
     <Compile Include="Entities\LivingEntity.cs" />
     <Compile Include="Entities\Person.cs" />
+    <Compile Include="Knowledge\IDescriptor.cs" />
+    <Compile Include="Knowledge\ITag.cs" />
+    <Compile Include="Knowledge\Tags.cs" />
     <Compile Include="LegendsSimTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

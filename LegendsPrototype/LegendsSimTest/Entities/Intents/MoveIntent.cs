@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendsSimTest.Knowledge;
+using LegendsSimTest.Knowledge.Tags;
 
 namespace LegendsSimTest.Entities.Intents {
 	public class MoveIntent : Intent {
@@ -57,6 +59,13 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public MoveResult getResult() {
 			return result;
+		}
+
+		public override IEnumerable<ITag> getTags() {
+			var tags = new List<ITag>();
+			tags.Add(new Moving());
+			tags.AddRange(base.getTags());
+			return tags;
 		}
 	}
 }

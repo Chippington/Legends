@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendsSimTest.Knowledge;
+using LegendsSimTest.Knowledge.Tags;
 
 namespace LegendsSimTest.Entities.Intents {
 	public class ConsumeIntent : Intent {
@@ -47,6 +49,13 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public ConsumeResult getResult() {
 			return result;
+		}
+
+		public override IEnumerable<ITag> getTags() {
+			var tags = new List<ITag>();
+			tags.Add(new Eating());
+			tags.AddRange(base.getTags());
+			return tags;
 		}
 	}
 }

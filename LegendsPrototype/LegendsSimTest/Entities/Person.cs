@@ -6,6 +6,7 @@ using System.Text;
 using LegendsSimTest.Entities.Components;
 using LegendsSimTest.Entities.Intents;
 using LegendsSimTest.Entities.Items;
+using LegendsSimTest.Knowledge;
 using SFMLEngine;
 using SFMLEngine.Entities.Components.Common;
 using static LegendsSimTest.Entities.Intents.Intent;
@@ -44,7 +45,8 @@ namespace LegendsSimTest.Entities {
 			funcMap = new Dictionary<Type, Delegate>();
 			inventory.addItem(new ConsumableItem());
 
-			addTaskCallback<SearchInventoryIntent.SearchInventoryTask>(cbSearchInventoryTask);
+			addTaskCallback<SearchInventoryIntent.SearchInventoryByTypeTask>(cbSearchInventoryByTypeTask);
+			addTaskCallback<SearchInventoryIntent.SearchInventoryByTagTask>(cbSearchInventoryByTagTask);
 			addTaskCallback<CheckStatusIntent.CheckStatusTask>(cbCheckStatusTask);
 			addTaskCallback<ConsumeIntent.ConsumeTask>(cbConsumeTask);
 			addTaskCallback<MoveIntent.MoveTask>(cbMoveTask);
@@ -71,9 +73,20 @@ namespace LegendsSimTest.Entities {
 			survivalIntent.onComplete += onSurvivalCheckComplete;
 		}
 
-		private void cbSearchInventoryTask(SearchInventoryIntent.SearchInventoryTask obj) {
+		private void cbSearchInventoryByTypeTask(SearchInventoryIntent.SearchInventoryByTypeTask obj) {
 			obj.complete(new SearchInventoryIntent.SearchInventoryResult() {
 				items = inventory.getItems().Where(i => obj.searchTypes.Contains(i.GetType())).ToList(),
+			});
+		}
+
+		private void cbSearchInventoryByTagTask(SearchInventoryIntent.SearchInventoryByTagTask obj) {
+			var searchTypes = obj.searchTags.Select(i => i.GetType());
+
+			var items = inventory.getItems()
+				.Where(i => i as IDescriptor != null && (i as IDescriptor).getTags().Select(ii => ii.GetType()).Intersect(searchTypes).Any());
+
+			obj.complete(new SearchInventoryIntent.SearchInventoryResult() {
+				items = items.ToList(),
 			});
 		}
 
@@ -139,6 +152,18 @@ namespace LegendsSimTest.Entities {
 
 				tryInvoke(currentTask);
 			}
+		}
+
+		public override IEnumerable<ITag> getTags() {
+			List<ITag> tags = new List<ITag>();
+			if (currentIntent != null)
+				tags.AddRange(currentIntent.getTags());
+
+			var comps = components.Values.Select(i => i as IDescriptor).Where(i => i != null);
+			foreach (var comp in comps)
+				tags.AddRange(comp.getTags());
+
+			return tags.GroupBy(i => i.GetType()).First();
 		}
 	}
 }

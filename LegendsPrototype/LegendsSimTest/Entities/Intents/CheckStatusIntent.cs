@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LegendsSimTest.Knowledge;
+using LegendsSimTest.Knowledge.Tags;
 
 namespace LegendsSimTest.Entities.Intents {
 	public class CheckStatusIntent : Intent {
@@ -40,6 +42,13 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public override ITask getTask() {
 			return task;
+		}
+
+		public override IEnumerable<ITag> getTags() {
+			var tags = new List<ITag>();
+			tags.Add(new Investigating());
+			tags.AddRange(base.getTags());
+			return tags;
 		}
 	}
 }

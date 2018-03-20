@@ -1,4 +1,6 @@
 ﻿using LegendsSimTest.Entities.Items;
+using LegendsSimTest.Knowledge;
+using LegendsSimTest.Knowledge.Tags;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,7 +23,7 @@ namespace LegendsSimTest.Entities.Intents {
 				var status = statusIntent.getResult();
 
 				if(status.hunger > 0) {
-					currentIntent = new SearchInventoryIntent(new List<Type>() { typeof(ConsumableItem) });
+					currentIntent = new SearchInventoryIntent(new List<ITag>() { new Consumable() });
 					currentIntent.onComplete += () => {
 						var searchIntent = currentIntent as SearchInventoryIntent;
 						var search = searchIntent.getResult();
@@ -64,6 +66,13 @@ namespace LegendsSimTest.Entities.Intents {
 		public override void onIntentDeactivated() {
 			base.onIntentDeactivated();
 			timer.Start();
+		}
+
+		public override IEnumerable<ITag> getTags() {
+			var tags = new List<ITag>();
+			tags.Add(new Investigating());
+			tags.AddRange(base.getTags());
+			return tags;
 		}
 	}
 }
