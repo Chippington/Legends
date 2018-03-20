@@ -27,13 +27,14 @@ namespace LegendsSimTest {
 			context.sceneManager.registerScene<Scene>();
 			context.sceneManager.setActiveScene<Scene>();
 			var p = context.sceneManager.getActiveScene().instantiate<Person>();
-			context.sceneManager.getActiveScene().instantiate<Person>();
+
+			for(int i = 0; i < 30; i++)
 			context.sceneManager.getActiveScene().instantiate<Person>();
 			p.position.x = 150f;
 			p.position.y = 150f;
 
 			Random random = new Random();
-			for (int i = 0; i < 10; i ++) {
+			for (int i = 0; i < 100; i ++) {
 				var c = context.sceneManager.getActiveScene().instantiate<ConsumableItem>();
 				c.position.x = 100 + random.Next(300);
 				c.position.y = 100 + random.Next(300);

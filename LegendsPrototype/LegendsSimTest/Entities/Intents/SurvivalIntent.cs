@@ -28,11 +28,6 @@ namespace LegendsSimTest.Entities.Intents {
 			timer.Start();
 
 			currentIntent = new CheckStatusIntent();
-			currentIntent.onComplete += () => {
-				
-			};
-
-			currentIntent = new CheckStatusIntent();
 			currentIntent.onComplete += onCheckStatusComplete;
 		}
 
@@ -55,10 +50,7 @@ namespace LegendsSimTest.Entities.Intents {
 
 			if (searchInventoryResult.items.Count > 0) {
 				currentIntent = new ConsumeIntent((ConsumableItem)searchInventoryResult.items[0]);
-				currentIntent.onComplete += () => {
-					complete();
-					return;
-				};
+				currentIntent.onComplete += onConsumeComplete;
 			} else {
 				currentIntent = new SearchFieldIntent(new List<ITag>() { new Consumable() });
 				currentIntent.onComplete += onSearchFieldComplete;
@@ -80,14 +72,35 @@ namespace LegendsSimTest.Entities.Intents {
 		}
 
 		private void onCollectComplete() {
-			var result = currentIntent.getTask();
-			var collectedItem = (currentIntent.getTask().getResult() as CollectIntent.CollectResult).item;
-			if (collectedItem == null) {
-				currentIntent = new SearchFieldIntent(new List<ITag>() { new Consumable() });
-				currentIntent.onComplete += onSearchFieldComplete;
+			var task = currentIntent.getTask();
+			if((task as CollectIntent.CollectTask) != null) {
+				var collectedItem = (currentIntent.getTask().getResult() as CollectIntent.CollectResult).item;
+				if (collectedItem == null) {
+					currentIntent = new SearchFieldIntent(new List<ITag>() { new Consumable() });
+					currentIntent.onComplete += onSearchFieldComplete;
+				} else {
+					currentIntent = new ConsumeIntent(collectedItem as ConsumableItem);
+					currentIntent.onComplete += onConsumeComplete;
+				}
+			} else if((task as CollectIntent.ClaimTask) != null) {
+				var claimTask = task as CollectIntent.ClaimTask;
+				if (claimTask != null) {
+					currentIntent = new SearchFieldIntent(new List<ITag>() { new Consumable() });
+					currentIntent.onComplete += onSearchFieldComplete;
+					return;
+				}
 			} else {
-				currentIntent = new ConsumeIntent(collectedItem as ConsumableItem);
-				currentIntent.onComplete += () => complete();
+				complete();
+			}
+		}
+
+		private void onConsumeComplete() {
+			var result = currentIntent.getTask().getResult() as ConsumeIntent.ConsumeResult;
+			if(result.success) {
+				complete();
+			} else {
+				currentIntent = new SearchInventoryIntent(new List<ITag>() { new Consumable() });
+				currentIntent.onComplete += onSearchInventoryComplete;
 			}
 		}
 

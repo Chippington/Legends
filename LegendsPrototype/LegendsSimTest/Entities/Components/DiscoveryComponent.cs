@@ -35,7 +35,7 @@ namespace LegendsSimTest.Entities.Components {
 
 			var entities = entity.getScene().getEntityList()
 				.Where(i => i as IDescriptor != null && (i as IDescriptor).getTags().Select(ii => ii.GetType()).Intersect(searchTypes).Any())
-				.Where(i => i as ItemBase == null || (i as ItemBase).container == null);
+				.Where(i => i as ItemBase == null || ((i as ItemBase).container == null) && (i as ItemBase).claimedBy == null);
 
 			entities = entities.OrderBy(i => {
 				var c = i.components.Get<PositionComponent>();

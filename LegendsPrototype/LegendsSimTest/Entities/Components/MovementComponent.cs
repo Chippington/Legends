@@ -11,9 +11,14 @@ using System.Threading.Tasks;
 namespace LegendsSimTest.Entities.Components {
 	public class MovementComponent : Component {
 		public PositionComponent position;
+		protected float vx, vy;
+		protected float tx, ty;
+		protected float moveSpeed;
+		protected bool moving;
 
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
+			moveSpeed = 30f;
 			position = entity.components.Get<PositionComponent>();
 
 			var p = entity as Person;
@@ -24,18 +29,51 @@ namespace LegendsSimTest.Entities.Components {
 		}
 
 		private void cbMoveToPointTask(MoveIntent.MoveToPointTask obj) {
-			position.x = obj.x;
-			position.y = obj.y;
-			obj.complete(new MoveIntent.MoveResult(true));
+			moving = true;
+			tx = obj.x;
+			ty = obj.y;
+
+			float dx = (position.x - tx) * (position.x - tx);
+			float dy = (position.y - ty) * (position.y - ty);
+			float dist = (float)Math.Sqrt(dx + dy);
+
+			if (dist <= 1f) {
+				obj.complete(new MoveIntent.MoveResult(true));
+				moving = false;
+			}
 		}
 
 		private void cbMoveToEntityTask(MoveIntent.MoveToEntityTask obj) {
+			moving = true;
 			var pos = obj.target.components.Get<PositionComponent>();
 			if (pos == null) obj.complete(new MoveIntent.MoveResult(MoveIntent.MoveResult.Reason.NOPATHFOUND));
 
-			position.x = pos.x;
-			position.y = pos.y;
-			obj.complete(new MoveIntent.MoveResult(true));
+			tx = pos.x;
+			ty = pos.y;
+
+			float dx = (position.x - tx) * (position.x - tx);
+			float dy = (position.y - ty) * (position.y - ty);
+			float dist = (float)Math.Sqrt(dx + dy);
+
+			if (dist <= 1f) {
+				obj.complete(new MoveIntent.MoveResult(true));
+				moving = false;
+			}
+		}
+
+		public override void onUpdate(GameContext context) {
+			base.onUpdate(context);
+			if (!moving) return;
+
+			float dx = (position.x - tx) * (position.x - tx);
+			float dy = (position.y - ty) * (position.y - ty);
+			float dist = (float)Math.Sqrt(dx + dy);
+
+			vx = (tx - position.x) / dist;
+			vy = (ty - position.y) / dist;
+
+			position.x += (float)(vx * context.time.delta) * moveSpeed;
+			position.y += (float)(vy * context.time.delta) * moveSpeed;
 		}
 	}
 }

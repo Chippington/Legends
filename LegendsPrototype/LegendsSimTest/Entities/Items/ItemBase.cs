@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 namespace LegendsSimTest.Entities.Items {
 	public class ItemBase : Entity {
 		public PositionComponent position;
+		public IEntity claimedBy;
 
 		protected InventoryComponent _container;
 		public InventoryComponent container {
@@ -51,6 +52,14 @@ namespace LegendsSimTest.Entities.Items {
 				_container.removeItem(this);
 
 			base.onDestroy();
+		}
+
+		public void claim(IEntity claimer) {
+			claimedBy = claimer;
+		}
+
+		public void free() {
+			claimedBy = null;
 		}
 	}
 }

@@ -48,12 +48,11 @@ namespace LegendsSimTest.Entities {
 			components.Add<SurvivalComponent>();
 			components.Add<MovementComponent>();
 
-			inventory.addItem(scene.instantiate<ConsumableItem>());
-
 			addTaskCallback<CheckStatusIntent.CheckStatusTask>(cbCheckStatusTask);
 			addTaskCallback<ChopTreeIntent.ChopTreeTask>(cbChopTreeTask);
 			addTaskCallback<CollectIntent.CollectTask>(cbCollectTask);
 			addTaskCallback<ConsumeIntent.ConsumeTask>(cbConsumeTask);
+			addTaskCallback<CollectIntent.ClaimTask>(cbClaimTask);
 			addTaskCallback<IdleIntent.IdleTask>(cbIdleTask);
 
 			idleIntent = new IdleIntent();
@@ -70,13 +69,23 @@ namespace LegendsSimTest.Entities {
 
 		private void cbIdleTask(IdleIntent.IdleTask obj) { }
 
+		private void cbClaimTask(CollectIntent.ClaimTask obj) {
+			ItemBase ret = null;
+			if (obj.target.claimedBy == null) {
+				obj.target.claim(this);
+				ret = obj.target;
+			}
+
+			obj.complete(new CollectIntent.ClaimResult(ret));
+		}
+
 		private void cbChopTreeTask(ChopTreeIntent.ChopTreeTask obj) {
 			obj.target.kill();
 			obj.complete(new ChopTreeIntent.ChopTreeResult());
 		}
 
 		private void cbCollectTask(CollectIntent.CollectTask obj) {
-			if (obj.target.container != null) {
+			if (obj.target.container != null || (obj.target.claimedBy != null && obj.target.claimedBy != this) || obj.target.isDestroyed()) {
 				obj.complete(new CollectIntent.CollectResult(null));
 				return;
 			}
@@ -93,8 +102,12 @@ namespace LegendsSimTest.Entities {
 		}
 
 		private void cbConsumeTask(ConsumeIntent.ConsumeTask obj) {
-			if (taskTime.Elapsed.TotalSeconds < 0.3d)
+			if (taskTime.Elapsed.TotalSeconds < 0.3d) {
+				if (obj.consumable.isDestroyed() == false && obj.consumable.container == null)
+					obj.complete(new ConsumeIntent.ConsumeResult(ConsumeIntent.ConsumeResult.Reason.ITEMNOTFOUND));
+
 				return;
+			}
 
 			hunger.subtractHunger(30);
 			obj.consumable.destroy();

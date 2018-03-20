@@ -28,7 +28,7 @@ namespace LegendsSimTest.Entities.Intents {
 				this.result = result;
 				onComplete?.Invoke();
 
-				log("Result: " + result.ToString());
+				//log("Result: " + result.ToString());
 			}
 
 			public Result getResult() {

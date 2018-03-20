@@ -27,6 +27,10 @@ namespace LegendsSimTest.Entities.Intents {
 			public ConsumeResult() { success = true; }
 			public ConsumeResult(bool success) { this.success = success; }
 			public ConsumeResult(Reason failureReason) { this.reason = failureReason; }
+
+			public override string ToString() {
+				return string.Format("Consume Result (Success: {0})", success);
+			}
 		}
 
 		protected ConsumeTask task;
