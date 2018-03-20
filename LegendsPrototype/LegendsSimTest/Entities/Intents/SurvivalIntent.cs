@@ -10,7 +10,17 @@ using System.Threading.Tasks;
 
 namespace LegendsSimTest.Entities.Intents {
 	public class SurvivalIntent : Intent {
-		protected Intent currentIntent;
+		protected Intent _currentIntent;
+		protected Intent currentIntent {
+			get { return _currentIntent; }
+			set {
+				if(value != null && value.GetType() == typeof(SearchFieldIntent)) {
+
+				}
+
+				_currentIntent = value;
+			}
+		}
 		protected Stopwatch timer;
 
 		public SurvivalIntent() {
@@ -19,31 +29,66 @@ namespace LegendsSimTest.Entities.Intents {
 
 			currentIntent = new CheckStatusIntent();
 			currentIntent.onComplete += () => {
-				var statusIntent = currentIntent as CheckStatusIntent;
-				var status = statusIntent.getResult();
+				
+			};
 
-				if(status.hunger > 0) {
-					currentIntent = new SearchInventoryIntent(new List<ITag>() { new Consumable() });
-					currentIntent.onComplete += () => {
-						var searchIntent = currentIntent as SearchInventoryIntent;
-						var search = searchIntent.getResult();
+			currentIntent = new CheckStatusIntent();
+			currentIntent.onComplete += onCheckStatusComplete;
+		}
 
-						if(search.items.Count > 0) {
-							currentIntent = new ConsumeIntent((ConsumableItem)search.items[0]);
-							currentIntent.onComplete += () => {
-								complete();
-								return;
-							};
-						} else {
-							complete();
-							return;
-						}
-					};
-				} else {
+		private void onCheckStatusComplete() {
+			var statusIntent = currentIntent as CheckStatusIntent;
+			var status = statusIntent.getResult();
+
+			if (status.hunger > 0) {
+				currentIntent = new SearchInventoryIntent(new List<ITag>() { new Consumable() });
+				currentIntent.onComplete += onSearchInventoryComplete;
+			} else {
+				complete();
+				return;
+			}
+		}
+
+		private void onSearchInventoryComplete() {
+			var searchInventoryIntent = currentIntent as SearchInventoryIntent;
+			var searchInventoryResult = searchInventoryIntent.getResult();
+
+			if (searchInventoryResult.items.Count > 0) {
+				currentIntent = new ConsumeIntent((ConsumableItem)searchInventoryResult.items[0]);
+				currentIntent.onComplete += () => {
 					complete();
 					return;
-				}
-			};
+				};
+			} else {
+				currentIntent = new SearchFieldIntent(new List<ITag>() { new Consumable() });
+				currentIntent.onComplete += onSearchFieldComplete;
+			}
+		}
+
+		private void onSearchFieldComplete() {
+			var searchFieldIntent = currentIntent as SearchFieldIntent;
+			var searchFieldResult = searchFieldIntent.getResult();
+			var filteredResults = searchFieldResult.results.Where(i => i as ConsumableItem != null).Select(i => i as ConsumableItem);
+
+			if (filteredResults.Any()) {
+				currentIntent = new CollectIntent(filteredResults.First());
+				currentIntent.onComplete += onCollectComplete;
+			} else {
+				complete();
+				return;
+			}
+		}
+
+		private void onCollectComplete() {
+			var result = currentIntent.getTask();
+			var collectedItem = (currentIntent.getTask().getResult() as CollectIntent.CollectResult).item;
+			if (collectedItem == null) {
+				currentIntent = new SearchFieldIntent(new List<ITag>() { new Consumable() });
+				currentIntent.onComplete += onSearchFieldComplete;
+			} else {
+				currentIntent = new ConsumeIntent(collectedItem as ConsumableItem);
+				currentIntent.onComplete += () => complete();
+			}
 		}
 
 		public override double priority { get => timer.Elapsed.TotalSeconds; set => base.priority = value; }

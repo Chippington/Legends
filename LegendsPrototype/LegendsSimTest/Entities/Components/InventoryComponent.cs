@@ -17,11 +17,17 @@ namespace LegendsSimTest.Entities.Components {
 		}
 
 		public void addItem(ItemBase item) {
+			if(item.container != null) {
+				item.container.removeItem(item);
+			}
+
 			items.Add(item);
+			item.container = this;
 		}
 
 		public void removeItem(ItemBase item) {
 			items.Remove(item);
+			item.container = null;
 		}
 
 		public List<ItemBase> getItems() {

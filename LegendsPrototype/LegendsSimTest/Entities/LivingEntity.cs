@@ -11,18 +11,25 @@ using System.Threading.Tasks;
 
 namespace LegendsSimTest.Entities {
 	public class LivingEntity : Entity, IDescriptor {
-		protected HealthComponent health { get; private set; }
-		protected Position position { get; private set; }
+		public HealthComponent health { get; private set; }
+		public PositionComponent position { get; private set; }
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
 
-			this.position = components.Add<Position>();
+			this.position = components.Add<PositionComponent>();
 			this.health = components.Add<HealthComponent>();
 		}
 
 		public bool isAlive() {
 			return health.getHealth() > 0;
 		}
+
+		public void kill() {
+			health.setHealth(0);
+			onDeath();
+		}
+
+		public virtual void onDeath() { }
 
 		public virtual IEnumerable<ITag> getTags() {
 			throw new NotImplementedException();

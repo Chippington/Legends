@@ -1,4 +1,5 @@
 ﻿using LegendsSimTest.Entities;
+using LegendsSimTest.Entities.Items;
 using SFMLEngine;
 using SFMLEngine.Network.Services;
 using SFMLEngine.Scenes;
@@ -10,8 +11,10 @@ using System.Threading.Tasks;
 
 namespace LegendsSimTest {
 	public class LegendsSimTest : GameWindow {
-		private NetServerService serverSvc;
-		private NetClientService clientSvc;
+		//private NetServerService serverSvc;
+		//private NetClientService clientSvc;
+
+		public LegendsSimTest() : base("Sim Test", 800, 600) { }
 
 		protected override void onRegisterServices(GameContext context) {
 			base.onRegisterServices(context);
@@ -23,7 +26,18 @@ namespace LegendsSimTest {
 			base.onLogicInitialized(context);
 			context.sceneManager.registerScene<Scene>();
 			context.sceneManager.setActiveScene<Scene>();
+			var p = context.sceneManager.getActiveScene().instantiate<Person>();
 			context.sceneManager.getActiveScene().instantiate<Person>();
+			context.sceneManager.getActiveScene().instantiate<Person>();
+			p.position.x = 150f;
+			p.position.y = 150f;
+
+			Random random = new Random();
+			for (int i = 0; i < 10; i ++) {
+				var c = context.sceneManager.getActiveScene().instantiate<ConsumableItem>();
+				c.position.x = 100 + random.Next(300);
+				c.position.y = 100 + random.Next(300);
+			}
 		}
 
 		protected override void onGraphicsInitialized(GameContext context) {

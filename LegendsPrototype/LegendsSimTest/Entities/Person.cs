@@ -7,6 +7,7 @@ using LegendsSimTest.Entities.Components;
 using LegendsSimTest.Entities.Intents;
 using LegendsSimTest.Entities.Items;
 using LegendsSimTest.Knowledge;
+using SFML.Graphics;
 using SFMLEngine;
 using SFMLEngine.Entities.Components.Common;
 using static LegendsSimTest.Entities.Intents.Intent;
@@ -14,7 +15,6 @@ using static LegendsSimTest.Entities.Intents.Intent;
 namespace LegendsSimTest.Entities {
 
 	public class Person : LivingEntity {
-		protected SurvivalIntent survivalIntent;
 		protected IdleIntent idleIntent;
 
 		public Dictionary<Type, Delegate> funcMap;
@@ -34,60 +34,55 @@ namespace LegendsSimTest.Entities {
 		}
 
 		public override void onInitialize(GameContext context) {
+			funcMap = new Dictionary<Type, Delegate>();
+			desires = new List<Intent>();
 			base.onInitialize(context);
+
 			health.setMaxHealth(100);
 			health.setHealth(10);
 
 			inventory = components.Add<InventoryComponent>();
 			hunger = components.Add<HungerComponent>();
 
-			desires = new List<Intent>();
-			funcMap = new Dictionary<Type, Delegate>();
-			inventory.addItem(new ConsumableItem());
+			components.Add<DiscoveryComponent>();
+			components.Add<SurvivalComponent>();
+			components.Add<MovementComponent>();
 
-			addTaskCallback<SearchInventoryIntent.SearchInventoryByTypeTask>(cbSearchInventoryByTypeTask);
-			addTaskCallback<SearchInventoryIntent.SearchInventoryByTagTask>(cbSearchInventoryByTagTask);
+			inventory.addItem(scene.instantiate<ConsumableItem>());
+
 			addTaskCallback<CheckStatusIntent.CheckStatusTask>(cbCheckStatusTask);
+			addTaskCallback<ChopTreeIntent.ChopTreeTask>(cbChopTreeTask);
+			addTaskCallback<CollectIntent.CollectTask>(cbCollectTask);
 			addTaskCallback<ConsumeIntent.ConsumeTask>(cbConsumeTask);
-			addTaskCallback<MoveIntent.MoveTask>(cbMoveTask);
 			addTaskCallback<IdleIntent.IdleTask>(cbIdleTask);
-
-			survivalIntent = new SurvivalIntent();
-			survivalIntent.onComplete += onSurvivalCheckComplete;
 
 			idleIntent = new IdleIntent();
 			idleIntent.priority = 3.0d;
 
-			desires.Add(survivalIntent);
 			desires.Add(idleIntent);
 		}
 
+		#region CALLBACKS
+
+		/*----------------------------------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------------------------------*/
+
 		private void cbIdleTask(IdleIntent.IdleTask obj) { }
 
-		private void onSurvivalCheckComplete() {
-			desires.Remove(survivalIntent);
-			survivalIntent.onComplete = null;
-
-			survivalIntent = new SurvivalIntent();
-			desires.Add(survivalIntent);
-			survivalIntent.onComplete += onSurvivalCheckComplete;
+		private void cbChopTreeTask(ChopTreeIntent.ChopTreeTask obj) {
+			obj.target.kill();
+			obj.complete(new ChopTreeIntent.ChopTreeResult());
 		}
 
-		private void cbSearchInventoryByTypeTask(SearchInventoryIntent.SearchInventoryByTypeTask obj) {
-			obj.complete(new SearchInventoryIntent.SearchInventoryResult() {
-				items = inventory.getItems().Where(i => obj.searchTypes.Contains(i.GetType())).ToList(),
-			});
-		}
+		private void cbCollectTask(CollectIntent.CollectTask obj) {
+			if (obj.target.container != null) {
+				obj.complete(new CollectIntent.CollectResult(null));
+				return;
+			}
 
-		private void cbSearchInventoryByTagTask(SearchInventoryIntent.SearchInventoryByTagTask obj) {
-			var searchTypes = obj.searchTags.Select(i => i.GetType());
-
-			var items = inventory.getItems()
-				.Where(i => i as IDescriptor != null && (i as IDescriptor).getTags().Select(ii => ii.GetType()).Intersect(searchTypes).Any());
-
-			obj.complete(new SearchInventoryIntent.SearchInventoryResult() {
-				items = items.ToList(),
-			});
+			inventory.addItem(obj.target);
+			obj.complete(new CollectIntent.CollectResult(obj.target));
 		}
 
 		private void cbCheckStatusTask(CheckStatusIntent.CheckStatusTask obj) {
@@ -102,14 +97,15 @@ namespace LegendsSimTest.Entities {
 				return;
 
 			hunger.subtractHunger(30);
+			obj.consumable.destroy();
 			obj.complete(new ConsumeIntent.ConsumeResult());
 		}
 
-		private void cbMoveTask(MoveIntent.MoveTask obj) {
-			position.x = obj.x;
-			position.y = obj.y;
-			obj.complete(new MoveIntent.MoveResult(true));
-		}
+		/*----------------------------------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------------------------------*/
+		/*----------------------------------------------------------------------------------------------*/
+
+		#endregion
 
 		public void addTaskCallback<T>(Action<T> func) where T : ITask {
 			if (funcMap.ContainsKey(typeof(T)) == false)
@@ -164,6 +160,18 @@ namespace LegendsSimTest.Entities {
 				tags.AddRange(comp.getTags());
 
 			return tags.GroupBy(i => i.GetType()).First();
+		}
+
+		private CircleShape shape;
+		public override void onDraw(GameContext context) {
+			base.onDraw(context);
+			if(shape == null) {
+				shape = new CircleShape(5f);
+				shape.FillColor = new Color(0, 125, 125);
+			}
+
+			shape.Position = new SFML.System.Vector2f(position.x, position.y);
+			context.window.Draw(shape);
 		}
 	}
 }

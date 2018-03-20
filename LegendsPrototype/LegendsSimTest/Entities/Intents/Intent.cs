@@ -20,7 +20,11 @@ namespace LegendsSimTest.Entities.Intents {
 			public IntentEvent onComplete { get; set; }
 			public R result { get; protected set; }
 
+			private bool completed = false;
 			public virtual void complete(R result) {
+				if (this.completed) throw new Exception("A task can only be completed once.");
+
+				this.completed = true;
 				this.result = result;
 				onComplete?.Invoke();
 

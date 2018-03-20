@@ -63,9 +63,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Components\DiscoveryComponent.cs" />
     <Compile Include="Entities\Components\HealthComponent.cs" />
     <Compile Include="Entities\Components\HungerComponent.cs" />
     <Compile Include="Entities\Components\InventoryComponent.cs" />
+    <Compile Include="Entities\Components\MovementComponent.cs" />
+    <Compile Include="Entities\Components\SurvivalComponent.cs" />
+    <Compile Include="Entities\Intents\BuildIntent.cs" />
+    <Compile Include="Entities\Intents\ChopTreeIntent.cs" />
+    <Compile Include="Entities\Intents\CollectIntent.cs" />
     <Compile Include="Entities\Intents\ConsumeIntent.cs" />
     <Compile Include="Entities\Intents\IdleIntent.cs" />
     <Compile Include="Entities\Intents\Intent.cs" />
@@ -78,6 +84,7 @@
     <Compile Include="Entities\Items\ItemBase.cs" />
     <Compile Include="Entities\LivingEntity.cs" />
     <Compile Include="Entities\Person.cs" />
+    <Compile Include="Entities\Tree.cs" />
     <Compile Include="Knowledge\IDescriptor.cs" />
     <Compile Include="Knowledge\ITag.cs" />
     <Compile Include="Knowledge\Tags.cs" />
