@@ -63,12 +63,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Components\AgeComponent.cs" />
     <Compile Include="Entities\Components\DiscoveryComponent.cs" />
     <Compile Include="Entities\Components\HealthComponent.cs" />
     <Compile Include="Entities\Components\HungerComponent.cs" />
+    <Compile Include="Entities\Components\IntentComponent.cs" />
     <Compile Include="Entities\Components\InventoryComponent.cs" />
     <Compile Include="Entities\Components\MovementComponent.cs" />
-    <Compile Include="Entities\Components\SurvivalComponent.cs" />
+    <Compile Include="Entities\Components\PersonComponent.cs" />
     <Compile Include="Entities\Intents\BuildIntent.cs" />
     <Compile Include="Entities\Intents\ChopTreeIntent.cs" />
     <Compile Include="Entities\Intents\CollectIntent.cs" />

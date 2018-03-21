@@ -1,4 +1,5 @@
-﻿using SFMLEngine;
+﻿using LegendsSimTest.Entities.Intents;
+using SFMLEngine;
 using SFMLEngine.Entities.Components;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,44 @@ namespace LegendsSimTest.Entities.Components {
 		}
 
 		private Stopwatch timer;
+		private Intent survivalIntent;
 
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
 			timer = new Stopwatch();
 			timer.Start();
+
+			var p = (entity as Person).components.Get<IntentComponent>();
+			if (p != null) {
+				p.addTaskCallback<ConsumeIntent.ConsumeTask>(cbConsumeTask);
+
+				survivalIntent = new SurvivalIntent();
+				survivalIntent.onComplete += onSurvivalCheckComplete;
+				p.addIntent(survivalIntent);
+			}
+		}
+
+		private void cbConsumeTask(ConsumeIntent.ConsumeTask obj) {
+			if (obj.time.Elapsed.TotalSeconds < 0.3d) {
+				if (obj.consumable.isDestroyed() == false && obj.consumable.container == null)
+					obj.complete(new ConsumeIntent.ConsumeResult(ConsumeIntent.ConsumeResult.Reason.ITEMNOTFOUND));
+
+				return;
+			}
+
+			subtractHunger(30);
+			obj.consumable.destroy();
+			obj.complete(new ConsumeIntent.ConsumeResult());
+		}
+
+		private void onSurvivalCheckComplete() {
+			var p = (entity as Person).components.Get<IntentComponent>();
+			p.removeIntent(survivalIntent);
+			survivalIntent.onComplete = null;
+
+			survivalIntent = new SurvivalIntent();
+			p.addIntent(survivalIntent);
+			survivalIntent.onComplete += onSurvivalCheckComplete;
 		}
 
 		public double getHunger() {

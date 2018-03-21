@@ -2,6 +2,7 @@
 using SFMLEngine;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace LegendsSimTest.Entities.Intents {
 
 	public class Intent : ObjectBase, IDescriptor {
 		public interface ITask {
+			Stopwatch time { get; set; }
 			IntentEvent onComplete { get; set; }
 			Result getResult();
 		}
@@ -19,6 +21,7 @@ namespace LegendsSimTest.Entities.Intents {
 		public class Task<R> : ObjectBase, ITask where R : Result {
 			public IntentEvent onComplete { get; set; }
 			public R result { get; protected set; }
+			public Stopwatch time { get; set; }
 
 			private bool completed = false;
 			public virtual void complete(R result) {

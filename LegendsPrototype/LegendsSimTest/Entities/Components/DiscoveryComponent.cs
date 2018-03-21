@@ -21,7 +21,7 @@ namespace LegendsSimTest.Entities.Components {
 			inventory = entity.components.Get<InventoryComponent>();
 			position = entity.components.Get<PositionComponent>();
 
-			var p = entity as Person;
+			var p = (entity as Person).components.Get<IntentComponent>();
 			if(p != null) {
 				p.addTaskCallback<SearchInventoryIntent.SearchInventoryByTypeTask>(cbSearchInventoryByTypeTask);
 				p.addTaskCallback<SearchInventoryIntent.SearchInventoryByTagTask>(cbSearchInventoryByTagTask);

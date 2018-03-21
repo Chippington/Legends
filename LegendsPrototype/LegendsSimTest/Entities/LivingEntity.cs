@@ -32,7 +32,12 @@ namespace LegendsSimTest.Entities {
 		public virtual void onDeath() { }
 
 		public virtual IEnumerable<ITag> getTags() {
-			throw new NotImplementedException();
+			List<ITag> tags = new List<ITag>();
+			var comps = components.Values.Select(i => i as IDescriptor).Where(i => i != null);
+			foreach (var comp in comps)
+				tags.AddRange(comp.getTags());
+
+			return tags.GroupBy(i => i.GetType()).First();
 		}
 	}
 }

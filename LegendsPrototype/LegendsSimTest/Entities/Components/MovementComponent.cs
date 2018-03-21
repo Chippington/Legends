@@ -21,8 +21,8 @@ namespace LegendsSimTest.Entities.Components {
 			moveSpeed = 30f;
 			position = entity.components.Get<PositionComponent>();
 
-			var p = entity as Person;
-			if(p != null) {
+			var p = (entity as Person).components.Get<IntentComponent>();
+			if (p != null) {
 				p.addTaskCallback<MoveIntent.MoveToPointTask>(cbMoveToPointTask);
 				p.addTaskCallback<MoveIntent.MoveToEntityTask>(cbMoveToEntityTask);
 			}
