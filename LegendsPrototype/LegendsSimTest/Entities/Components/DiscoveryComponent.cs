@@ -14,12 +14,14 @@ namespace LegendsSimTest.Entities.Components {
 	public class DiscoveryComponent : Component {
 		private InventoryComponent inventory;
 		private PositionComponent position;
+		private VisionComponent vision;
 
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
 
 			inventory = entity.components.Get<InventoryComponent>();
 			position = entity.components.Get<PositionComponent>();
+			vision = entity.components.Get<VisionComponent>();
 
 			var p = (entity as Person).components.Get<IntentComponent>();
 			if(p != null) {
@@ -33,7 +35,7 @@ namespace LegendsSimTest.Entities.Components {
 		private void cbSearchFieldByTagTask(SearchFieldIntent.SearchFieldByTagTask obj) {
 			var searchTypes = obj.searchTags.Select(i => i.GetType());
 
-			var entities = entity.getScene().getEntityList()
+			var entities = vision.nearby
 				.Where(i => i as IDescriptor != null && (i as IDescriptor).getTags().Select(ii => ii.GetType()).Intersect(searchTypes).Any())
 				.Where(i => i as ItemBase == null || ((i as ItemBase).container == null) && (i as ItemBase).claimedBy == null);
 
@@ -51,7 +53,7 @@ namespace LegendsSimTest.Entities.Components {
 
 		private void cbSearchFieldByTypeTask(SearchFieldIntent.SearchFieldByTypeTask obj) {
 			obj.complete(new SearchFieldIntent.SearchFieldResult() {
-				results = entity.getScene().getEntityList().Where(i => obj.searchTypes.Contains(i.GetType())).ToList(),
+				results = vision.nearby.Where(i => obj.searchTypes.Contains(i.GetType())).ToList(),
 			});
 		}
 

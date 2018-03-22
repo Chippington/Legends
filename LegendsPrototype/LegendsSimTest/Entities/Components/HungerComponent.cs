@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace LegendsSimTest.Entities.Components {
 	public class HungerComponent : Component {
+		private IntentComponent intent;
 		private double consumed;
 		private double hunger {
 			get {
@@ -21,18 +22,21 @@ namespace LegendsSimTest.Entities.Components {
 		private Stopwatch timer;
 		private Intent survivalIntent;
 
+		public HungerComponent(IntentComponent intent) {
+			this.intent = intent;
+		}
+
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
 			timer = new Stopwatch();
 			timer.Start();
 
-			var p = (entity as Person).components.Get<IntentComponent>();
-			if (p != null) {
-				p.addTaskCallback<ConsumeIntent.ConsumeTask>(cbConsumeTask);
+			if (intent != null) {
+				intent.addTaskCallback<ConsumeIntent.ConsumeTask>(this.cbConsumeTask);
 
 				survivalIntent = new SurvivalIntent();
 				survivalIntent.onComplete += onSurvivalCheckComplete;
-				p.addIntent(survivalIntent);
+				intent.addIntent(survivalIntent);
 			}
 		}
 

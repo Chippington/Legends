@@ -71,6 +71,7 @@
     <Compile Include="Entities\Components\InventoryComponent.cs" />
     <Compile Include="Entities\Components\MovementComponent.cs" />
     <Compile Include="Entities\Components\PersonComponent.cs" />
+    <Compile Include="Entities\Components\VisionComponent.cs" />
     <Compile Include="Entities\Intents\BuildIntent.cs" />
     <Compile Include="Entities\Intents\ChopTreeIntent.cs" />
     <Compile Include="Entities\Intents\CollectIntent.cs" />

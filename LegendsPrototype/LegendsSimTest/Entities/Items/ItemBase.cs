@@ -3,6 +3,7 @@ using SFML.Graphics;
 using SFMLEngine;
 using SFMLEngine.Entities;
 using SFMLEngine.Entities.Components.Common;
+using SFMLEngine.Entities.Components.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ using System.Threading.Tasks;
 namespace LegendsSimTest.Entities.Items {
 	public class ItemBase : Entity {
 		public PositionComponent position;
+		public RigidBody rigidBody;
+
 		public IEntity claimedBy;
 
 		protected InventoryComponent _container;
@@ -31,6 +34,10 @@ namespace LegendsSimTest.Entities.Items {
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
 			position = components.Add<PositionComponent>();
+			rigidBody = components.Add<RigidBody>();
+
+			rigidBody.setBoundingBox(new BoundingBox(-3f, -3f, 3f, 3f));
+			rigidBody.setDebugDraw(true);
 		}
 
 		RectangleShape shape;
