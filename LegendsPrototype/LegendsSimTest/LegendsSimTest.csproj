@@ -69,6 +69,7 @@
     <Compile Include="Entities\Components\HungerComponent.cs" />
     <Compile Include="Entities\Components\IntentComponent.cs" />
     <Compile Include="Entities\Components\InventoryComponent.cs" />
+    <Compile Include="Entities\Components\MemoryComponent.cs" />
     <Compile Include="Entities\Components\MovementComponent.cs" />
     <Compile Include="Entities\Components\PersonComponent.cs" />
     <Compile Include="Entities\Components\VisionComponent.cs" />
@@ -90,7 +91,16 @@
     <Compile Include="Entities\Tree.cs" />
     <Compile Include="Knowledge\IDescriptor.cs" />
     <Compile Include="Knowledge\ITag.cs" />
+    <Compile Include="Knowledge\Registry\Node.cs" />
+    <Compile Include="Knowledge\Registry\Nodes\EventNode.cs" />
+    <Compile Include="Knowledge\Registry\Nodes\Events\BirthEvent.cs" />
+    <Compile Include="Knowledge\Registry\Nodes\Events\DeathEvent.cs" />
+    <Compile Include="Knowledge\Registry\Nodes\Events\EntityEvent.cs" />
+    <Compile Include="Knowledge\Registry\Nodes\Events\LifetimeEvent.cs" />
+    <Compile Include="Knowledge\Registry\Nodes\PersonNode.cs" />
+    <Compile Include="Knowledge\Registry\Registry.cs" />
     <Compile Include="Knowledge\Tags.cs" />
+    <Compile Include="Knowledge\WorldTime.cs" />
     <Compile Include="LegendsSimTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

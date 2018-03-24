@@ -1,4 +1,5 @@
 ﻿using LegendsSimTest.Entities.Intents;
+using LegendsSimTest.Knowledge;
 using SFMLEngine;
 using SFMLEngine.Entities.Components;
 using System;
@@ -14,12 +15,12 @@ namespace LegendsSimTest.Entities.Components {
 		private double consumed;
 		private double hunger {
 			get {
-				if (timer == null) return 0d;
-				return timer.Elapsed.TotalSeconds - consumed;
+				if (startTime == null) return 0d;
+				return (WorldTime.Now - startTime).TotalHours - consumed;
 			}
 		}
 
-		private Stopwatch timer;
+		private DateTime startTime;
 		private Intent survivalIntent;
 
 		public HungerComponent(IntentComponent intent) {
@@ -28,8 +29,7 @@ namespace LegendsSimTest.Entities.Components {
 
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
-			timer = new Stopwatch();
-			timer.Start();
+			startTime = WorldTime.Now;
 
 			if (intent != null) {
 				intent.addTaskCallback<ConsumeIntent.ConsumeTask>(this.cbConsumeTask);
@@ -41,14 +41,14 @@ namespace LegendsSimTest.Entities.Components {
 		}
 
 		private void cbConsumeTask(ConsumeIntent.ConsumeTask obj) {
-			if (obj.time.Elapsed.TotalSeconds < 0.3d) {
+			if ((WorldTime.Now - obj.startTime).TotalMinutes < 5) {
 				if (obj.consumable.isDestroyed() == false && obj.consumable.container == null)
 					obj.complete(new ConsumeIntent.ConsumeResult(ConsumeIntent.ConsumeResult.Reason.ITEMNOTFOUND));
 
 				return;
 			}
 
-			subtractHunger(30);
+			subtractHunger(6d);
 			obj.consumable.destroy();
 			obj.complete(new ConsumeIntent.ConsumeResult());
 		}

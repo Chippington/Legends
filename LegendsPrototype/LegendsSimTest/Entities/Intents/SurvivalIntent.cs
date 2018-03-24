@@ -21,11 +21,10 @@ namespace LegendsSimTest.Entities.Intents {
 				_currentIntent = value;
 			}
 		}
-		protected Stopwatch timer;
 
+		protected DateTime time;
 		public SurvivalIntent() {
-			timer = new Stopwatch();
-			timer.Start();
+			time = WorldTime.Now;
 
 			currentIntent = new CheckStatusIntent();
 			currentIntent.onComplete += onCheckStatusComplete;
@@ -104,7 +103,7 @@ namespace LegendsSimTest.Entities.Intents {
 			}
 		}
 
-		public override double priority { get => timer.Elapsed.TotalSeconds; set => base.priority = value; }
+		public override double priority { get => (WorldTime.Now - time).TotalMinutes; set => base.priority = value; }
 
 		public override void complete() {
 			base.complete();
@@ -118,12 +117,10 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public override void onIntentActivated() {
 			base.onIntentActivated();
-			timer.Stop();
 		}
 
 		public override void onIntentDeactivated() {
 			base.onIntentDeactivated();
-			timer.Start();
 		}
 
 		public override IEnumerable<ITag> getTags() {

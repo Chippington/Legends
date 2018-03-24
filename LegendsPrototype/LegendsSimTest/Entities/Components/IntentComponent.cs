@@ -85,10 +85,10 @@ namespace LegendsSimTest.Entities.Components {
 					taskTime.Reset();
 					taskTime.Start();
 					lastTask = currentTask;
+					currentTask.startTime = WorldTime.Now;
 					//log("Starting Task: " + currentTask.ToString());
 				}
 
-				currentTask.time = taskTime;
 				tryInvoke(currentTask);
 			}
 		}

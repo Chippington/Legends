@@ -12,7 +12,7 @@ namespace LegendsSimTest.Entities.Intents {
 
 	public class Intent : ObjectBase, IDescriptor {
 		public interface ITask {
-			Stopwatch time { get; set; }
+			DateTime startTime { get; set; }
 			IntentEvent onComplete { get; set; }
 			Result getResult();
 		}
@@ -21,7 +21,7 @@ namespace LegendsSimTest.Entities.Intents {
 		public class Task<R> : ObjectBase, ITask where R : Result {
 			public IntentEvent onComplete { get; set; }
 			public R result { get; protected set; }
-			public Stopwatch time { get; set; }
+			public DateTime startTime { get; set; }
 
 			private bool completed = false;
 			public virtual void complete(R result) {

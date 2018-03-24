@@ -1,4 +1,5 @@
 ﻿using LegendsSimTest.Entities.Intents;
+using LegendsSimTest.Knowledge;
 using SFMLEngine;
 using SFMLEngine.Entities.Components;
 using SFMLEngine.Entities.Components.Common;
@@ -18,7 +19,7 @@ namespace LegendsSimTest.Entities.Components {
 
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
-			moveSpeed = 30f;
+			moveSpeed = 5f * WorldTime.timeMultiplier;
 			position = entity.components.Get<PositionComponent>();
 
 			var p = (entity as Person).components.Get<IntentComponent>();

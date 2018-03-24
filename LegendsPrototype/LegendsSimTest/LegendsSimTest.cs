@@ -1,8 +1,11 @@
 ﻿using LegendsSimTest.Entities;
 using LegendsSimTest.Entities.Items;
+using LegendsSimTest.Knowledge;
+using SFML.Graphics;
 using SFMLEngine;
 using SFMLEngine.Network.Services;
 using SFMLEngine.Scenes;
+using SFMLEngine.Services.Statistics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,14 +45,27 @@ namespace LegendsSimTest {
 
 		protected override void onGraphicsInitialized(GameContext context) {
 			base.onGraphicsInitialized(context);
+
+			var svc = context.services.getService<StatisticsService>();
+			var win = svc.getDebugWindow();
+
+			win.Position = new SFML.System.Vector2f(10f, 50f);
 		}
 
 		protected override void onLogicUpdate(GameContext context) {
 			base.onLogicUpdate(context);
 		}
 
+		Text text;
 		protected override void onGraphicsUpdate(GameContext context) {
 			base.onGraphicsUpdate(context);
+
+			if(text == null) {
+				text = new Text("", new Font("Resources/Fonts/MavenPro-Regular.ttf"));
+			}
+
+			text.DisplayedString = WorldTime.Now.ToString();
+			context.window.Draw(text);
 		}
 
 		static void Main(string[] args) {
