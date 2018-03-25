@@ -41,7 +41,8 @@ namespace LegendsSimTest.Knowledge.Registry {
 
 		public Node(Node previous) {
 			this.prev = previous;
-			previous.next = this;
+			if(previous != null)
+				previous.next = this;
 		}
 
 		public virtual void onRegister() {

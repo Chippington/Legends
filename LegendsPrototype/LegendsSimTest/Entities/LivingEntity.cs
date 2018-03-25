@@ -41,7 +41,7 @@ namespace LegendsSimTest.Entities {
 			foreach (var comp in comps)
 				tags.AddRange(comp.getTags());
 
-			return tags.GroupBy(i => i.GetType()).First();
+			return tags.GroupBy(i => i.GetType()).Select(i => i.First());
 		}
 	}
 }

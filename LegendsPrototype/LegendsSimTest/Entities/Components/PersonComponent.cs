@@ -19,20 +19,22 @@ namespace LegendsSimTest.Entities.Components {
 		public DiscoveryComponent discovery;
 		public InventoryComponent inventory;
 		public VisionComponent vision;
+		public MemoryComponent memory;
 		public RigidBody rigidBody;
 
 		public override void onInitialize(GameContext context) {
 			base.onInitialize(context);
+			position = entity.components.Add<PositionComponent>();
+			rigidBody = entity.components.Add<RigidBody>();
 			intent = entity.components.Add<IntentComponent>();
+			memory = entity.components.Add<MemoryComponent>();
 			vision = entity.components.Add<VisionComponent>();
 			discovery = entity.components.Add<DiscoveryComponent>();
 			inventory = entity.components.Add<InventoryComponent>();
-			position = entity.components.Add<PositionComponent>();
 			movement = entity.components.Add<MovementComponent>();
 			health = entity.components.Add<HealthComponent>();
 			hunger = entity.components.Add<HungerComponent>();
 			age = entity.components.Add<AgeComponent>();
-			rigidBody = entity.components.Add<RigidBody>();
 		}
 	}
 }

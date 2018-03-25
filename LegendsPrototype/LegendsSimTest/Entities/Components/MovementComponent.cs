@@ -70,8 +70,18 @@ namespace LegendsSimTest.Entities.Components {
 			float dy = (position.y - ty) * (position.y - ty);
 			float dist = (float)Math.Sqrt(dx + dy);
 
-			vx = (tx - position.x) / dist;
-			vy = (ty - position.y) / dist;
+			vx = ((tx - position.x) / dist) * moveSpeed;
+			vy = ((ty - position.y) / dist) * moveSpeed;
+
+			vx *= (float)context.time.delta;
+			vy *= (float)context.time.delta;
+
+			float moveDist = (float)Math.Sqrt((vx * vx) + (vy * vy));
+			if(moveDist > dist) {
+				position.x = tx;
+				position.y = ty;
+				return;
+			} 
 
 			position.x += (float)(vx * context.time.delta) * moveSpeed;
 			position.y += (float)(vy * context.time.delta) * moveSpeed;

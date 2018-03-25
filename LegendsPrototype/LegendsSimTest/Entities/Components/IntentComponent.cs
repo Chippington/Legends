@@ -1,7 +1,9 @@
 ﻿using LegendsSimTest.Entities.Intents;
 using LegendsSimTest.Knowledge;
+using SFML.Graphics;
 using SFMLEngine;
 using SFMLEngine.Entities.Components;
+using SFMLEngine.Entities.Components.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,10 +15,10 @@ using static LegendsSimTest.Entities.Intents.Intent;
 namespace LegendsSimTest.Entities.Components {
 	public class IntentComponent : Component, IDescriptor {
 		protected Dictionary<Type, Delegate> funcMap;
+		protected PositionComponent position;
 		protected IdleIntent idleIntent;
 		protected List<Intent> intents;
 		protected Intent currentIntent;
-		protected Stopwatch taskTime;
 
 		public InventoryComponent inventory;
 		public HungerComponent hunger;
@@ -30,6 +32,10 @@ namespace LegendsSimTest.Entities.Components {
 
 				return currentIntent.getTask();
 			}
+		}
+
+		public IntentComponent(PositionComponent position) {
+			this.position = position;
 		}
 
 		public override void onInitialize(GameContext context) {
@@ -62,13 +68,18 @@ namespace LegendsSimTest.Entities.Components {
 
 		public override void onUpdate(GameContext context) {
 			base.onUpdate(context);
-			var ordered = intents.OrderByDescending(i => {
+			var ordered = intents.AsEnumerable();
+
+			if (currentIntent != null)
+				ordered = ordered.Where(i => i.interrupt && i.priority > currentIntent.priority);
+
+			ordered = intents.OrderByDescending(i => {
 				if (i == currentIntent) return i.priority + (i.priority / 3);
 				return i.priority;
 			});
 
 			var priority = ordered.FirstOrDefault();
-			if (priority != currentIntent) {
+			if (priority != null && priority != currentIntent) {
 				if (currentIntent != null)
 					currentIntent.onIntentDeactivated();
 
@@ -78,19 +89,32 @@ namespace LegendsSimTest.Entities.Components {
 
 			if (currentIntent != null && currentTask != null) {
 				if (lastTask != currentTask) {
-					if (taskTime == null) {
-						taskTime = new Stopwatch();
-					}
-
-					taskTime.Reset();
-					taskTime.Start();
 					lastTask = currentTask;
 					currentTask.startTime = WorldTime.Now;
+
+					if (text != null) text.DisplayedString = string.Format("{0} > {1}", currentIntent.GetType().Name, currentTask.GetType().Name);
 					//log("Starting Task: " + currentTask.ToString());
 				}
 
 				tryInvoke(currentTask);
+				if(currentIntent.isComplete) {
+					intents.Remove(currentIntent);
+				}
 			}
+		}
+
+		private Text text;
+		public override void onDraw(GameContext context) {
+			base.onDraw(context);
+
+			if (text == null) {
+				var font = new Font("Resources/Fonts/MavenPro-Regular.ttf");
+
+				text = new Text("", font, 9);
+			}
+
+			text.Position = new SFML.System.Vector2f(position.x, position.y);
+			context.window.Draw(text);
 		}
 
 		private void cbIdleTask(IdleIntent.IdleTask obj) { }

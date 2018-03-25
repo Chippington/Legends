@@ -15,9 +15,10 @@ namespace LegendsSimTest.Entities.Components {
 	public class VisionComponent : Component, ICollider {
 		public List<IEntity> nearby;
 
-		private BoundingBox bounds;
 		private float radius;
+		private BoundingBox bounds;
 		private PositionComponent position;
+		private MemoryComponent memory;
 
 		public VisionComponent(PositionComponent position) {
 			this.position = position;
@@ -28,6 +29,7 @@ namespace LegendsSimTest.Entities.Components {
 			nearby = new List<IEntity>();
 			radius = 100f;
 			bounds = new BoundingBox(-radius, -radius, radius, radius);
+			memory = entity.getComponents().Get<MemoryComponent>();
 		}
 
 		public BoundingBox getBoundingBox() {
@@ -42,6 +44,9 @@ namespace LegendsSimTest.Entities.Components {
 		public void onEnterCollision(ICollider other) {
 			if (other as RigidBody == null) return;
 
+			if (other.getEntity() as Person != null)
+				memory?.onPersonEnterVisionRange((Person)other.getEntity());
+
 			var otherEnt = other.getEntity();
 			if (otherEnt != null) {
 				nearby.Add(otherEnt);
@@ -50,6 +55,9 @@ namespace LegendsSimTest.Entities.Components {
 
 		public void onLeaveCollision(ICollider other) {
 			if (other as RigidBody == null) return;
+
+			if (other.getEntity() as Person != null)
+				memory?.onPersonLeaveVisionRange((Person)other.getEntity());
 
 			var otherEnt = other.getEntity();
 			if (otherEnt != null) {
@@ -73,10 +81,8 @@ namespace LegendsSimTest.Entities.Components {
 
 		CircleShape shape;
 		public override void onDraw(GameContext context) {
-			return;
-
 			base.onDraw(context);
-			if(shape == null) {
+			if (shape == null) {
 				shape = new CircleShape(radius);
 				shape.FillColor = new Color(0, 0, 0, 0);
 				shape.OutlineColor = new Color(0, 125, 255);

@@ -41,6 +41,8 @@ namespace LegendsSimTest.Entities.Intents {
 
 		public IntentEvent onComplete;
 		public virtual double priority { get; set; }
+		public virtual bool interrupt { get; set; } = false;
+		public virtual bool isComplete { get; set; } = false;
 
 		public virtual ITask getTask() {
 			return null;
@@ -49,6 +51,7 @@ namespace LegendsSimTest.Entities.Intents {
 		public virtual void onIntentActivated() { }
 		public virtual void onIntentDeactivated() { }
 		public virtual void complete() {
+			this.isComplete = true;
 			onComplete?.Invoke();
 		}
 

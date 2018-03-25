@@ -8,4 +8,6 @@ namespace LegendsSimTest.Knowledge {
 	public interface ITag {
 		string name { get; set; }
 	}
+
+	public interface IActionTag : ITag { }
 }

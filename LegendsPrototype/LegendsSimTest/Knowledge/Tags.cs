@@ -19,18 +19,19 @@ namespace LegendsSimTest.Knowledge.Tags {
 		}
 	}
 
+	public class Consumable : Tag { }
+	public class Starving : Tag { }
+	public class Bloated : Tag { }
+	public class Healthy : Tag { }
+	public class Hungry : Tag { }
+	public class Sickly : Tag { }
 	public class Alive : Tag { }
 	public class Dead : Tag { }
-	public class Consumable : Tag { }
-	public class Moving : Tag { }
-	public class Healthy : Tag { }
-	public class Sickly : Tag { }
-	public class Hungry : Tag { }
-	public class Starving : Tag { }
 	public class Full : Tag { }
-	public class Bloated : Tag { }
 	public class Idle : Tag { }
-	public class Searching : Tag { }
-	public class Investigating : Tag { }
-	public class Eating : Tag { }
+
+	public class Investigating : Tag, IActionTag { }
+	public class Searching : Tag, IActionTag { }
+	public class Eating : Tag, IActionTag { }
+	public class Moving : Tag, IActionTag { }
 }

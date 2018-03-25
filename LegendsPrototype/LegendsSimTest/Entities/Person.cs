@@ -25,7 +25,7 @@ namespace LegendsSimTest.Entities {
 		public override void onUpdate(GameContext context) {
 			base.onUpdate(context);
 		}
-
+		
 		private CircleShape shape;
 		public override void onDraw(GameContext context) {
 			base.onDraw(context);
@@ -36,6 +36,12 @@ namespace LegendsSimTest.Entities {
 
 			shape.Position = new SFML.System.Vector2f(position.x, position.y);
 			context.window.Draw(shape);
+		}
+
+		private static int _pid;
+		private int pid = Person._pid++;
+		public override string ToString() {
+			return string.Format("Name: Person{0}", pid);
 		}
 	}
 }

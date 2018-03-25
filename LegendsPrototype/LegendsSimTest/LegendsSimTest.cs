@@ -1,4 +1,5 @@
 ﻿using LegendsSimTest.Entities;
+using LegendsSimTest.Entities.Components;
 using LegendsSimTest.Entities.Items;
 using LegendsSimTest.Knowledge;
 using SFML.Graphics;
@@ -30,7 +31,7 @@ namespace LegendsSimTest {
 			context.sceneManager.registerScene<Scene>();
 			context.sceneManager.setActiveScene<Scene>();
 			Random random = new Random();
-			for (int i = 0; i < 30; i++) {
+			for (int i = 0; i < 100; i++) {
 				var c = context.sceneManager.getActiveScene().instantiate<Person>();
 				c.position.x = 50 + random.Next(600);
 				c.position.y = 50 + random.Next(400);
@@ -54,6 +55,17 @@ namespace LegendsSimTest {
 
 		protected override void onLogicUpdate(GameContext context) {
 			base.onLogicUpdate(context);
+			//if (WorldTime.Now < new DateTime(1, 1, 1, 0, 15, 0))
+			//	return;
+
+			//var sc = context.sceneManager.getActiveScene();
+			//if (sc == null) return;
+
+			//var ps = sc.getEntityList().Where(i => i.GetType() == typeof(Person)).Select(i => i.components.Get<MemoryComponent>());
+			//ps = ps.OrderByDescending(i => i.references.Count);
+
+			//var p = ps.First();
+			//log("A");
 		}
 
 		Text text;

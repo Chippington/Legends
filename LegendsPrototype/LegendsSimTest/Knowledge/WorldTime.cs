@@ -19,6 +19,6 @@ namespace LegendsSimTest.Knowledge {
 			}
 		}
 
-		public static int timeMultiplier { get; private set; } = 1000;
+		public static int timeMultiplier { get; private set; } = 100;
 	}
 }
